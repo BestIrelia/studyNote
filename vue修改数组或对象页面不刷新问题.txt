@@ -1,0 +1,13 @@
+修改对象或数组时页面视图不刷新问题：
+对象： 
+	1、对象属性修改完成之后，使用Object.assign创建新对象
+	    this.checkStore=Object.assign({},this.checkStore);
+	2、this.$set(this.obj,'k1','v1')
+	3、Vue.set(object, key, value)
+
+数组：
+	1、Vue可以监听数组的splice、push、unshift等方法调用
+	2、Vue 不能检测以下变动的数组：
+		① 当你利用索引直接设置一个项时，vm.items[indexOfItem] = newValue
+		② 当你修改数组的长度时，例如： vm.items.length = newLength
+	3、Vue.set(items, indexOfItem, newValue)

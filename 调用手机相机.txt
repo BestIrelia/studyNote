@@ -1,0 +1,9 @@
+不需要特殊环境，使用input标签 type值为file，可以调用系统默认的照相机、相册、摄像机、录音功能。
+先上代码：
+ <input type="file" accept="video/*;capture=camcorder">
+ <input type="file" accept="audio/*;capture=microphone">
+ <input type="file" accept="image/*;capture=camera">
+accept表示打开的系统文件目录
+capture表示的是系统所捕获的默认设备，camera：照相机；camcorder：摄像机；microphone：录音；
+其中还有一个属性multiple，支持多选，当支持多选时，multiple优先级高于capture，所以只用写成：
+<input type="file" accept="image/*" multiple>就可以，可以在手机上测试一下。

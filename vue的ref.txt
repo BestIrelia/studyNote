@@ -1,0 +1,3 @@
+给元素绑定ref属性：
+	1、直接绑定ref="refName"：可通过this.$ref.refName获取到dom元素
+	2、动态绑定:ref="refName"：要通过this.$ref.refName[0]获取dom元素

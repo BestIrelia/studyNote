@@ -1,0 +1,21 @@
+oninput，h5标准事件，用于监听input输入框变化，IE9以下不支持，
+IE可以使用onpropertychange事件。
+在js中，onpropertychange事件可以直接使用element。onpropertychange=fn绑定，
+而oninput事件需要通过addEventListener进行绑定
+
+select元素的option绑定click事件在ie中可能不生效，需要再select上绑定onChange事件，
+事件函数传入this。
+事件假设如下：
+    function showChange(select) {
+        console.log(select)//select元素（DOM）
+        var selectedOption=select.options[select.selectedIndex];//select下的option元素
+        console.log(selectedOption)
+        if(selectedOption.value=="11"){
+            console.log('11')
+        }else if(selectedOption.value=="12"){
+            console.log('12')
+        }else if(selectedOption.value=="13"){
+            console.log('13')
+        }
+    }
+onChange事件只能在选择不同的option时才触发，选择相同的option不会触发

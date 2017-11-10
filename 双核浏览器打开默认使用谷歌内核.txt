@@ -1,0 +1,11 @@
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+IE=edge告诉IE使用最新的引擎渲染网页，chrome=1则可以激活Chrome Frame（谷歌内嵌浏览器框架GCF）
+edge可以改为其他ie版本，如11
+ 
+<meta name="renderer" content="webkit" />
+告诉浏览器，用webkit内核进行解析，当然前提是浏览器有webkit内核才可以
+
+这两个代码的作用是让双核浏览器如360，在进入当前域名页面时优先默认使用谷歌内核进行页面解析。
+但是，如果在该域名下用户手动切换过内核模式的话，代码就会失效，因为浏览器手动设置的优先级要
+高于代码设置。
+

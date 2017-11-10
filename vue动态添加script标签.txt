@@ -1,0 +1,10 @@
+  	    let head= document.getElementsByTagName('head')[0];
+            let script= document.createElement('script');
+            script.onload = script.onreadystatechange = function() {
+                if (!this.readyState || this.readyState === "loaded" || this.readyState === "complete" ) {
+                    // Handle memory leak in IE
+                    script.onload = script.onreadystatechange = null;
+                } };
+            script.src= '  ';
+            script.id= ' ';
+            head.appendChild(script);

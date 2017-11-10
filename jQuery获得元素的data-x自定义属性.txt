@@ -1,0 +1,3 @@
+jQuery获取具有自定义属性data-x的元素的属性值：
+假如li具有data-liname=“xxx”，则可通过jQuery对象的data方法获取。
+$('li的选择器').data('liname')   =>   结果为xxx

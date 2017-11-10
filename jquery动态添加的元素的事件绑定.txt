@@ -1,0 +1,29 @@
+动态添加的元素的事件需要在添加元素的时候再次绑定，如：
+
+$('.add-pic').click(function () {
+    var html='    <div class="upload-pic-group">\n' +
+        '                <input type="text" name="picName" value="" class="upload-pic-input L">\n' +
+        '                <div class="upload-pic-btn L">\n' +
+        '                    <span>选择图片</span>\n' +
+        '                    <input type="file" accept="image/*;capture=camera" class="add-pic-file">\n' +
+        '                </div>\n' +
+        '                <div class="clear-pic L">\n' +
+        '                    <span>清空</span>\n' +
+        '                </div>\n' +
+        '            </div>'
+    $('.upload-pic-container').append(html);
+
+    //给动态添加的元素绑定选择图片事件
+    $('.add-pic-file').on('change',function () {
+        $(this).parent().prev().attr('value',$(this).attr('value'));
+        console.log($(this)[0].files[0])
+    });
+
+    //给动态添加的元素绑定清空图片选择事件
+    $('.clear-pic').click(function () {
+        //清空选择文件的input，使得可以再次选择同一张图片
+        $(this).prev().children().last().attr('value','');
+        //清空显示的文件名
+        $(this).prev().prev().attr('value','');
+    });
+});

@@ -1,0 +1,5 @@
+一：安装 weixin-js-sdk 这个模块 npm install weixin-js-sdk --save-dev
+二：开始使用 import wx from 'weixin-js-sdk'
+
+微信js-SDK官方文档：http://qydev.weixin.qq.com/wiki/index.php?title=%E5%BE%AE%E4%BF%A1JS-SDK%E6%8E%A5%E5%8F%A3
+https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141115
