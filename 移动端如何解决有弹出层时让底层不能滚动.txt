@@ -1,0 +1,8 @@
+1、如果弹出层不需要滚动，则直接禁止window的touchmove事件
+打开弹出层：window.document.addEventListener('touchmove', noTouchMove);
+关闭弹出层：window.document.removeEventListener('touchmove', noTouchMove);
+function noTouchMove(e){
+	e.preventDefalult;
+}
+2、如果弹出层需要滚动，则设置html根标签和body标签的overflow属性为hidden，height为100%，然后将需要滚动的弹出层的容器定位设置为absolute，overflow为auto，关闭弹框恢复属性
+这样弊端是页面会默认滚回顶部，解决该问题方案就是设置body的top值为负的body的scrollTop。关闭弹出层则恢复
