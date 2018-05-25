@@ -5,4 +5,6 @@ function noTouchMove(e){
 	e.preventDefalult;
 }
 2、如果弹出层需要滚动，则设置html根标签和body标签的overflow属性为hidden，height为100%，然后将需要滚动的弹出层的容器定位设置为absolute，overflow为auto，关闭弹框恢复属性
-这样弊端是页面会默认滚回顶部，解决该问题方案就是设置body的top值为负的body的scrollTop。关闭弹出层则恢复
+这样弊端是页面会默认滚回顶部
+3、解决上面的方法是，html标签不设置，只设置body定位为fixed，将其的top值为负的body的scrollTop。关闭弹出层则恢复为原始定位，并滚动到top值的位置，这个方法在安卓上很完美，
+ios11上也很完美，ios11以下没有测试，但如果ios11以下弹框里滑动卡顿的话可以在需要滚动的弹框上加上 -webkit-overflow-scrolling : touch;
