@@ -1,0 +1,20 @@
+在页面有模态弹框的时候，一般都会禁止页面滚动，方法一般为设置body的overflow属性为hidden
+但是当页面具有滚动条时，设置overflow为hidden会使得滚动条消失从而使得页面晃动。解决方案如下
+方案一：直接设置html标签或body标签的margin-right为17px。该方案简单粗暴，但其实并不完美，
+	因为有的浏览器滚动条宽度是15px，这样的话统一设17还是会有2px的偏差
+方案二：判断浏览器版本，根据不同浏览器分别设置html或body标签的margin-right为滚动条的宽度
+	该方法虽然理论上可行，但鉴于浏览器判断情况可能过多，所以判断逻辑可能较为麻烦，不推荐
+方案三：用js结合css动态计算滚动条宽度。步骤如下：先检测现有宽度，然后再为 html 增加一个class，class
+	为overflow:hidden; 再检测，然后复原去class，用两次结果相减得到即可滚动条宽度。该代码不用
+	考虑当前页面是否有滚动条，没有滚动条相减结果为0，有滚动条相减结果为滚动条宽度。具体代码
+	如下：
+	.dialog-overflow{
+    		overflow: hidden;
+	}
+	var H=$('html');
+        	var w1 = $(window).width();
+        	H.addClass('dialog-overflow');
+        	var w2 = $(window).width();
+        	H.removeClass('dialog-overflow');
+        	$("<style type='text/css'>.dialog-margin{margin-right:" + (w2 - w1) + "px;}</style>").appendTo("head");
+	计算完毕后，弹出弹框时给body加上相应的dialog-overflow和dialog-margin样式即可，关闭弹框时候去掉
