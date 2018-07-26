@@ -1,0 +1,12 @@
+简单方法：使用uglifyJs
+	1、安装node
+	2、安装uglifyJs：npm install uglify-js -g
+	3、进入到js所在文件目录下：uglifyjs lazyLoad.js -m -o lazyLoad.min.js
+	     不带-m参数的话只压缩空格和换行，带-m参数则是混淆压缩，会将局部变量变为abc等简单变量名
+
+其他方法：
+	1、js在线压缩工具：
+		https://tool.lu/js/
+		http://tool.oschina.net/jscompress
+		第二个网址还可以压缩css文件
+	2、webpack、gulp等方式
