@@ -1,0 +1,12 @@
+apply、call和bind的区别：
+	在JavaScript中，call、apply和bind是Function对象自带的三个方法，都是为了改变函数体内部 this 的指向。
+           	apply 、 call 、bind 三者第一个参数都是 this 要指向的对象，也就是想指定的上下文；
+          	apply 、 call 、bind 三者都可以利用后续参数传参；
+                bind 是返回对应 函数，便于稍后调用；apply 、call 则是立即调用 。
+
+	1、apply和call改变函数this的指向，并且会立即执行该函数
+	2、bind是改变this指向是通过创建一个新的函数来实现的，但这个函数不会立即执行，要执行的话需要自行调用
+	     即
+		var func = bar.bind(foo); //此时this已经指向了foo对象，但是用bind（）方法并不会立即执行，而是创建一个新函数，如果要直接调用的话 可以 bar.bind(foo)（）
+		func(); // 这时函数才调用，两行代码可以写成这样 bar.bind(foo)();
+	3、apply后续参数需要以数组的形式传入，而call只能将参数按顺序传入，bind第二个参数以及后续参数也是按顺序传入，或者只传入第一个参数，后续参数在函数调用时候再传入
