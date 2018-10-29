@@ -1,0 +1,15 @@
+1、如果希望本地项目可以通过电脑ip地址访问：
+     修改config文件夹下的index文件中dev的host属性为字符串的0.0.0.0
+
+2、如果希望编译后线上不能看webpack映射的组件内容：
+     修改config文件夹下index文件中build的productionSourceMap为false
+
+3、如果希望编译后的代码可以包含.ico文件：
+     在build文件夹下的webpack.base.conf.js文件中的export中添加代码
+       plugins: [
+    new HtmlWebpackPlugin({
+      favicon: './favicon.ico'
+    })
+  ],
+     添加在output属性下方即可，然后ico文件放在项目根目录下，在index.html文件
+     中加入<link rel="shortcut icon" href="/favicon.ico"/>进行引用
