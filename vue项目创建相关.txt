@@ -13,3 +13,6 @@
   ],
      添加在output属性下方即可，然后ico文件放在项目根目录下，在index.html文件
      中加入<link rel="shortcut icon" href="/favicon.ico"/>进行引用
+
+4、如果要将vue项目初始化的2个字符缩进改为4个：
+     修改根目录下的.editorconfig文件的indent_size为4，然后重启编辑器
