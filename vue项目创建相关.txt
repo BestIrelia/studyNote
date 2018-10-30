@@ -5,7 +5,9 @@
      修改config文件夹下index文件中build的productionSourceMap为false
 
 3、如果希望编译后的代码可以包含.ico文件：
-     在build文件夹下的webpack.base.conf.js文件中的export中添加代码
+     在build文件夹下的webpack.base.conf.js文件中引入HtmlWebpackPlugin，
+     const HtmlWebpackPlugin = require('html-webpack-plugin')
+     然后在export中添加代码
        plugins: [
     new HtmlWebpackPlugin({
       favicon: './favicon.ico'
