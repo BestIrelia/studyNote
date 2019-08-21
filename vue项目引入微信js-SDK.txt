@@ -1,5 +1,28 @@
+方法一：直接script标签引入http://res.wx.qq.com/open/js/jweixin-1.4.0.js
+
+方法二：
 一：安装 weixin-js-sdk 这个模块 npm install weixin-js-sdk --save-dev
 二：开始使用 import wx from 'weixin-js-sdk'
 
-微信js-SDK官方文档：http://qydev.weixin.qq.com/wiki/index.php?title=%E5%BE%AE%E4%BF%A1JS-SDK%E6%8E%A5%E5%8F%A3
-https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141115
+微信js-SDK官方文档：https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141115
+
+单页面web项目使用微信jssdk的坑：
+在你的单页面项目是使用history模式进行路由跳转的情况下，你会发现js接口安全域名配置是OK的，安卓手机、微信开发工具上测试分享也都OK，唯独在iOS的
+微信上，从a页面跳转到b页面后，b页面配置分享就会报签名（invalid signature）错误。但是如果你手动刷新一下b页面就又没有签名错误的问题了。
+造成这个问题的主要原因是history模式下的路由跳转是操作浏览器历史记录，在iOS的微信上，路由发生变化时，微信会认为spa页面的url没有变，还是第一
+次打开的页面a，而这时候你使用location.href.split('#')[0]获取到的url虽然是页面b，然后签名的是页面b，但微信认为执行jssdk的页面是a，就导致签名与
+页面不一致，报签名错误。安卓的微信，spa页面的url是会变的所以不会有这个问题，其实安卓也是官方在6.2版本之后才对pushState做了支持，才能支持
+spa变化。
+至此就可以得出解决方案：
+IOS端，进入单页面第一个页面时，将其url保存到全局变量中。路由切换后，在调用分享接口时，使用全局变量里保存的url来请求签名
+一：App.vue中监听路由来记录入口url：
+  watch: {
+    $route: function (to, from) {
+      // 记录进入单页面webapp时的url,用以解决iOS配置微信jssdk签名错误问题
+      if (typeof window.entryUrl === 'undefined' || window.entryUrl === '') {
+        window.entryUrl = location.href.split('#')[0]
+      }
+    }
+  },
+二：进行签名的时候iOS使用之前记录在全局的入口链接，  Android不需要
+ let signLink = (browser.isIphone || browser.isIpad || browser.isIpod) ? window.entryUrl : location.href.split('#')[0];

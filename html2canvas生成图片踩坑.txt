@@ -1,0 +1,91 @@
+业务上有html生成图片的需求，所以git上找了两个js插件，html2canvas和domToImage，这两个插件其实都有不少的问题，但是比较之后觉得html2canvas
+稍微好一点，所以决定用它。
+html2canvas生成的一个canvas，可使用toDataURL方法生成base64格式的图片，该图片可以直接在img标签中使用，在pc端上也可以直接使用a标签
+将该base64的图片保存下来，移动端结合app的jsBridge或者提示用户长按保存。
+说实在的，html2canvas其实问题也挺多的
+
+使用方法：
+1、页面script标签直接引入html2canvas文件
+2、通过npm安装并import到页面中
+
+遇到的坑：
+1、生成图片时不支持文本溢出展示...的相关css样式：
+	单行溢出的样式中部支持text-overflow:ellipsis;样式，故文字会展示但不会展示...
+	多行溢出的样式中部支持display: -webkit-box;样式，故此时文字也不会展示只展示空白
+     解决方案：跟产品协商生成的图片上文案溢出直接overflow: hidden;隐藏，不展示...
+
+2、使用text-decoration: line-through;样式来做划线价格等需求时，生成图片时划线的位置会偏下
+     解决方案：如果划线的文本只有一行，可以使用伪类来模拟划线，以达到划线剧中的需求，但如果时多行划线文本此方法就行不通了
+           span{
+              position: relative;
+              display: inline-block;
+              &:after { /* 处理生成的下划线偏下的问题 */
+                position: absolute;
+                width: 100%;
+                height: 1px;
+                top: 50%;
+                left: 0;
+                content: '';
+                background-color: #aaa;
+              }
+            }
+
+3、dom元素中包含img标签，并且img的图片是服务器上的图片时，生成图片时对应的img的图片会一片空白
+     解决方案：html2canvas的配置项加上 useCORS: true
+	我一开始使用该方案时，公司图片是存放在七牛服务器上的，该方法完美。
+	后来换到新公司，图片时存在自己的服务器，这时发现该方法会在渲染时报跨域的错误。看了下html2canvas源码，在开启useCORS: true
+	选项时，会给在canvas上绘制的img标签加上crossorigin="anonymous"属性，这时图片的请求由普通的get请求变成了cors请求，由于服
+	务端的图片没有设置cors允许跨域的响应头，所以就报跨域错误了，这时候就需要服务端配合设置图片的响应头Access-Control-Allow-Origin
+	为*或者对应的域名。前面七牛之所以不会报跨域的错误，那是因为七牛默认设置无论普通请求还是cors请求都会返回允许跨域的响应头
+	此外，如果图片是在cdn服务器上，由于之前这些图片已经访问过，会在cdn上留下缓存，这时候你会发现即使服务端做了cors设置一样对
+	该图片无用，那是因为虽然发起的是cors请求但是拿到的却是cdn缓存中的get请求响应，这时候你需要想办法击穿cdn缓存，方法就是自己
+	在初次渲染img标签时加上crossorigin="anonymous"，并给图片加上一个固定的随机字符串：
+	 	<img :src="item.goodsImg+'?any_string_is_ok'" alt="没有图片" crossorigin="anonymous">（:src为vue的语法）
+	加上这个之后，有时候还是无法成功，依旧报跨域错误，至于为什么我觉得时cdn的锅. . .，因为我发现如果换几个随机字符串多次尝试
+	之后，突然就不报跨域错误了。如果不想多次尝试的话，毕竟你也不知道什么时候能尝试成功，那就还有一个方法，就是让服务端的人给
+	这张图片做代理
+	由此也可知道，如果你是拉取的第三方的图片，有跨域报错的话，那就得使用服务端代理的方法解决跨域问题了。
+
+4、生成的图片不够清晰
+     解决方案：pc上将canvas放大两倍，移动端根据设备像素比window.devicePixelRatio来设置放大倍数。
+     备注：如果生成图片的dom有需要使用图片作为background背景的话，最好使用<img>来实现background-image的效果，不然上述解决模糊
+	的方案无法起作用
+
+5、移动端上生成的base64图片的内容会发生偏移，造成图片不完整并且便宜处会留白
+     解决方案：一开始使用setTimeout进行延迟生成，有效，但是并不是所有使用html2canvas插件的地方都生效。实在找不出原因在哪，最后将需要
+	生成base64图片的dom元素copy一份，并将copy的这一份dom元素设置为fixed定位，并将其top设为0，left设为100%移出可视区域之外，
+	发现可以完美解决偏移的问题
+
+以下，附上完整代码（该代码获取dom为vue语法）
+      setTimeout(() => {
+        const shareContent = this.$refs.poster // 要生成base64的dom
+        const width = shareContent.offsetWidth // 获取dom 宽度
+        const height = shareContent.offsetHeight // 获取dom 高度
+        const canvas = document.createElement('canvas') // 创建一个canvas节点
+        const ua = window.navigator.userAgent.toLowerCase()
+        let scale = 2 // 定义任意放大倍数 支持小数
+        if ( ua.includes('mobile') ) {
+          scale = window.devicePixelRatio
+        }
+        canvas.width = width * scale // 定义canvas 宽度 * 缩放
+        canvas.height = height * scale // 定义canvas高度 *缩放
+        canvas.getContext('2d').scale(scale, scale) // 获取context,设置scale
+        const opts = {
+          scale: scale, // 添加的scale 参数
+          canvas: canvas, // 自定义 canvas
+          // logging: true, // 日志开关，便于查看html2canvas的内部执行流程
+          width: width, // dom 原始宽度
+          height: height,
+          useCORS: true // 【重要】开启跨域配置
+        }
+        html2canvas(shareContent, opts).then((canvas) => {
+          let context = canvas.getContext('2d')
+          // 【重要】关闭抗锯齿
+          context.mozImageSmoothingEnabled = false
+          context.webkitImageSmoothingEnabled = false
+          context.msImageSmoothingEnabled = false
+          context.imageSmoothingEnabled = false
+          console.log(canvas.toDataURL('image/jpeg', 1.0)) 
+         // 如果觉得生成的图片太大，可以将1.0改为0.8或别的数字来减小图片，虽然也会牺牲一点清晰度，但相差无几，比不将canvas放大生成的图好得多
+        })
+      }, 200)

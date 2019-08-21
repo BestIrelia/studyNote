@@ -1,0 +1,72 @@
+业务中涉及到了生成pdf并保存的需求，便研究了一下，html2canvas的使用方式和坑可以看另外一份笔记，这里主要将jspdf。
+使用html2canvas和jspdf生成pdf的原理是，先用html2canvas将对应的dom生成一张图片，然后根据a4纸张的比例计算一页pdf显示的canvas高度
+进行分页处理。
+jspdf用的时候也没遇到什么大坑吧，所以就贴一下代码就行了。jspdf兼容性的话是ie9以上和其他主流浏览器
+页面script标签引入html2canvas和jspdf.js，然后：
+        const shareContent = $('#printBox')[0] // 要生成base64的dom，jQuery语法
+        const width = shareContent.offsetWidth // 获取dom 宽度
+        const height = shareContent.offsetHeight // 获取dom 高度
+        const canvas = document.createElement('canvas') // 创建一个canvas节点
+        const ua = window.navigator.userAgent.toLowerCase()
+        let scale = 2 // 定义任意放大倍数 支持小数
+        if ( ua.includes('mobile') ) {
+          scale = window.devicePixelRatio
+        }
+        canvas.width = width * scale // 定义canvas 宽度 * 缩放
+        canvas.height = height * scale // 定义canvas高度 *缩放
+        canvas.getContext('2d').scale(scale, scale) // 获取context,设置scale
+        const opts = {
+          scale: scale, // 添加的scale 参数
+          canvas: canvas, // 自定义 canvas
+          // logging: true, // 日志开关，便于查看html2canvas的内部执行流程
+          width: width, // dom 原始宽度
+          height: height,
+          useCORS: true // 【重要】开启跨域配置
+        }
+        html2canvas(shareContent, opts).then((canvas) => {
+          let context = canvas.getContext('2d')
+          // 【重要】关闭抗锯齿
+          context.mozImageSmoothingEnabled = false
+          context.webkitImageSmoothingEnabled = false
+          context.msImageSmoothingEnabled = false
+          context.imageSmoothingEnabled = false
+          console.log(canvas.toDataURL('image/jpeg', 1.0)) 
+         // 如果觉得生成的图片太大，可以将1.0改为0.8或别的数字来减小图片，虽然也会牺牲一点清晰度，但相差无几，比不将canvas放大生成的图好得多
+         // 生成PDF
+            var contentWidth = canvas.width;
+            var contentHeight = canvas.height;
+
+            //一页pdf显示html页面生成的canvas高度;
+            var pageHeight = contentWidth / 592.28 * 841.89;
+            //未生成pdf的html页面高度
+            var leftHeight = contentHeight;
+            //页面偏移
+            var position = 0;
+            //a4纸的尺寸[595.28,841.89]，html页面生成的canvas在pdf中图片的宽高
+            // var imgWidth = 595.28;
+            // var imgHeight = 592.28/contentWidth * contentHeight;
+            var imgWidth = 555.28;
+            var imgHeight = 555.28 / contentWidth * contentHeight;
+
+            var pageData = canvas.toDataURL('image/jpeg', 1.0);
+
+            var pdf = new jsPDF('', 'pt', 'a4');
+
+            //有两个高度需要区分，一个是html页面的实际高度，和生成pdf的页面高度(841.89)
+            //当内容未超过pdf一页显示的范围，无需分页
+            if (leftHeight < pageHeight) {
+                pdf.addImage(pageData, 'JPEG', 20, 0, imgWidth, imgHeight);
+            } else {
+                while (leftHeight > 0) {
+                    pdf.addImage(pageData, 'JPEG', 20, position, imgWidth, imgHeight)
+                    leftHeight -= pageHeight;
+                    position -= 841.89;
+                    //避免添加空白页
+                    if (leftHeight > 0) {
+                        pdf.addPage();
+                    }
+                }
+            }
+
+            pdf.save('content.pdf');
+        })
