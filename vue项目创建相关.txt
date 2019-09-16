@@ -1,10 +1,22 @@
+方法一：
+npm install -g vue-cli
+vue init webpack project_name
+
+方法二：（该方法安装的cli为3.x版本，之后推荐使用该方法）
+npm install -g @vue/cli
+vue create project_name
+
 1、如果希望本地项目可以通过电脑ip地址访问：
-     修改config文件夹下的index文件中dev的host属性为字符串的0.0.0.0
+     修改config文件夹下的index文件中dev的host属性为字符串的0.0.0.0（方法一构建的项目）
 
 2、如果希望编译后线上不能看webpack映射的组件内容：
-     修改config文件夹下index文件中build的productionSourceMap为false
+     修改config文件夹下index文件中build的productionSourceMap为false（方法一构建的项目）
+     项目根目录下创建vue.config.js文件，并添加代码：（方法二构建的项目）
+	module.exports = {
+  	  productionSourceMap: false
+	}
 
-3、如果希望编译后的代码可以包含.ico文件：
+3、如果希望编译后的代码可以包含.ico文件：（方法一构建的项目）
      在build文件夹下的webpack.base.conf.js文件中引入HtmlWebpackPlugin，
      const HtmlWebpackPlugin = require('html-webpack-plugin')
      然后在export中添加代码
@@ -18,3 +30,11 @@
 
 4、如果要将vue项目初始化的2个字符缩进改为4个：
      修改根目录下的.editorconfig文件的indent_size为4，然后重启编辑器
+
+5、文件说明：
+     .browserslistc：根据提供的目标浏览器的环境来，智能添加css前缀，js的polyfill垫片,来兼容旧版本浏览器，而不是一股脑的添加。
+     避免不必要的兼容代码，以提高代码的编译质量。
+     .editorconfig：编辑器配置文件文件
+     .eslintrc.js：eslint语法检测
+     .postcss.config.js：可以配合.browserslistc文件添加css前缀等，还可以配合postcss-pxtorem，将px转换成rem，详见另外一篇rem笔记
+     vue.config.js：vue的配置文件，比如设置生产环境是否生成 sourceMap 文件
