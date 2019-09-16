@@ -1,0 +1,88 @@
+以下适配方法都是以750设计稿为基准的
+
+方法一：
+1、index.html文件head里面加入以下代码
+    <script>!function (a) {
+      "use strict";
+
+      function f() {
+        c = b.documentElement.getBoundingClientRect().width, c >= 750 ? c = 750 : 320 >= c && (c = 320), window.rootFontSize = 100 * (c / a), b.querySelector("html").style.fontSize = window.rootFontSize + "px"
+      }
+
+      var c, e, b = document;
+      b.querySelector("html"), f(), window.addEventListener("resize", function () {
+        clearTimeout(e), e = setTimeout(f, 150)
+      }, !1), "complete" === b.readyState ? b.body.style.fontSize = ".24rem" : b.addEventListener("DOMContentLoaded", function () {
+        b.body.style.fontSize = ".24rem"
+      }, !1)
+    }(750);</script>
+2、书写css时，要以rem为单位。对于设计稿的px尺寸直接除以100即为对应的rem单位
+
+方法二：
+1、安装postcss-pxtorem
+2、根目录下的postcss.config.js文件中写入以下代码
+module.exports = {
+  plugins: {
+    autoprefixer: {},
+    'postcss-pxtorem': {
+      rootValue: 75,
+      unitPrecision: 5,
+      propList: [
+        '*'
+      ],
+      selectorBlackList: [
+        'ignore', /^.van-/
+      ],
+      replace: true,
+      mediaQuery: false,
+      minPixelValue: 0
+    }
+  }
+}
+3、index.html文件的head加入以下代码
+    <script type="text/javascript">
+    ;
+    (function (win, lib) {
+    var doc = win.document
+    var docEl = doc.documentElement
+    var metaEl = doc.querySelector('meta[name="viewport"]')
+    var dpr = 0
+    var scale = 0
+    var tid
+    var flexible = lib.flexible || (lib.flexible = {})
+    if (metaEl) {
+    var match = metaEl.getAttribute('content').match(/initial\-scale=([\d\.]+)/)
+    if (match) {
+    scale = parseFloat(match[1])
+    dpr = parseInt(1 / scale)
+    }
+    }
+    docEl.setAttribute('data-dpr', dpr)
+
+    function refreshRem() {
+    var width = docEl.getBoundingClientRect().width
+    var rem = width / 10
+    docEl.style.fontSize = rem + 'px'
+    flexible.rem = win.rem = rem
+    }
+    win.addEventListener('resize', function () {
+    clearTimeout(tid)
+    tid = setTimeout(refreshRem, 300)
+    }, false)
+    win.addEventListener('pageshow', function (e) {
+    if (e.persisted) {
+    clearTimeout(tid)
+    tid = setTimeout(refreshRem, 300)
+    }
+    }, false)
+    if (doc.readyState === 'complete') {
+    doc.body.style.fontSize = 12 * dpr + 'px'
+    } else {
+    doc.addEventListener('DOMContentLoaded', function (e) {
+    doc.body.style.fontSize = 12 * dpr + 'px'
+    }, false)
+    }
+    refreshRem()
+    })(window, window['lib'] || (window['lib'] = {}))
+    </script>
+4、书写css时，直接以px为单位即可，postcss-pxtorem会将px转为rem
