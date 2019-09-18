@@ -1,5 +1,5 @@
 1、如果弹出层不需要滚动，则直接禁止window的touchmove事件
-打开弹出层：window.document.addEventListener('touchmove', noTouchMove);
+打开弹出层：window.document.addEventListener('touchmove', noTouchMove,{ passive: false });
 关闭弹出层：window.document.removeEventListener('touchmove', noTouchMove);
 function noTouchMove(e){
 	e.preventDefalult();
