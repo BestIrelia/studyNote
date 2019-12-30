@@ -1,5 +1,9 @@
 接口报跨域是由于浏览器的同源策略限制，postman不会报是因为postman是一个Chrome插件，Chrome插件可以设置允许跨域，
 设置位置在chrome 扩展插件 的 manifest.json 文件中。
+manifest 文件中
+"permissions": [
+"http://www.google.com/"
+],
 跨域允许设置可以使用完整域名, 例如:
 "http://www.google.com/"
 "http://www.gmail.com/"
