@@ -1,0 +1,16 @@
+接口报跨域是由于浏览器的同源策略限制，postman不会报是因为postman是一个Chrome插件，Chrome插件可以设置允许跨域，
+设置位置在chrome 扩展插件 的 manifest.json 文件中。
+跨域允许设置可以使用完整域名, 例如:
+"http://www.google.com/"
+"http://www.gmail.com/"
+或者使用模式匹配, 例如:
+"http://*.google.com/"
+"http://*/"
+模式匹配"http://*/" 表示可以发起到所有域的 HTTP 请求. 注意在这里, 模式匹配有点像内容脚本匹配, 但是这里的任何域名后的路径信息都被忽略
+
+
+你的chrome体验从本地chrome json文件到chrome扩展的json文件。其中大部分可以在
+  C：\ Users \ username\AppData\Local\Google\ Chrome \ 
+  
+大多数manifest.json文件可在
+  C：\Users\username\AppData\Local\Google\Chrome\User Data\Default\Extensions 
